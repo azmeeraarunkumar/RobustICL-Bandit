@@ -1,218 +1,140 @@
-\# RobustICL-Bandit
+# RobustICL-Bandit
 
+## 1. Project Overview
 
+RobustICL-Bandit investigates partition selection for in-context learning (ICL) when training data contains noisy labels.
 
-\## 1. Project Overview
+It compares three strategies:
 
+- **Fixed-P1:** Always selects partition 1, with 0% intended label noise.
+- **Random:** Selects a partition randomly.
+- **UCB1:** Uses Upper Confidence Bound (UCB1) to balance exploration and exploitation based on observed rewards.
 
+## 2. Dataset
 
-RobustICL-Bandit investigates the selection of training partitions for In-Context Learning (ICL) when the available data contains noisy labels.
+The project uses AG News for four-class text classification:
 
+- World
+- Sports
+- Business
+- Sci/Tech
 
+Dataset details:
 
-The project compares three strategies:
+- Training examples: 120,000
+- Test examples: 7,600
+- Evaluation queries: 100
+- Number of noisy partitions: 10
+- Samples per partition: 12,000
 
+## 3. Experimental Setup
 
+- **Language model:** `Qwen/Qwen2.5-0.5B-Instruct`
+- **Task:** News text classification
+- **Demonstrations per query:** 4
+- **Reward:** 1 for a correct prediction, 0 otherwise
 
-\- \*\*Fixed-P1:\*\* Always selects partition 1, which has 0% injected label noise.
+Intended partition noise rates:
 
-\- \*\*Random:\*\* Randomly selects a partition.
-
-\- \*\*UCB1:\*\* Uses the Upper Confidence Bound algorithm to balance exploration and exploitation using observed rewards.
-
-
-
-\## 2. Dataset
-
-
-
-The project uses the AG News text classification dataset with four classes:
-
-
-
-1\. World
-
-2\. Sports
-
-3\. Business
-
-4\. Sci/Tech
-
-
-
-Dataset information:
-
-\- Training examples: 120,000
-
-\- Test examples: 7,600
-
-\- Evaluation queries: 100
-
-\- Number of noisy partitions: 10
-
-\- Samples per partition: 12,000
-
-
-
-\## 3. Experimental Setup
-
-
-
-\- \*\*Language model:\*\* Qwen/Qwen2.5-0.5B-Instruct
-
-\- \*\*Task:\*\* News text classification
-
-\- \*\*Demonstrations per query:\*\* 4
-
-\- \*\*Reward:\*\* 1 for a correct prediction and 0 for an incorrect prediction
-
-
-
-The intended noise rates are:
-
-
-
-| Partition | Noise Rate |
-
+| Partition | Noise rate |
 |---|---:|
-
 | P1 | 0% |
-
 | P2 | 10% |
-
 | P3 | 20% |
-
 | P4 | 30% |
-
 | P5 | 40% |
-
 | P6 | 50% |
-
 | P7 | 40% |
-
 | P8 | 30% |
-
 | P9 | 20% |
-
 | P10 | 10% |
 
+## 4. Preliminary Results
 
+### Earlier saved run
 
-\## 4. Preliminary Results
-
-
-
-| Policy | Correct Predictions | Accuracy |
-
+| Policy | Correct predictions | Accuracy |
 |---|---:|---:|
-
 | Fixed-P1 | 59/100 | 59% |
-
 | Random | 65/100 | 65% |
-
 | UCB1 | 54/100 | 54% |
 
+### Repaired runner run
 
+| Policy | Correct predictions | Accuracy |
+|---|---:|---:|
+| Fixed-P1 | 62/100 | 62% |
+| Random | 64/100 | 64% |
+| UCB1 | 66/100 | 66% |
 
-These results represent one reported run with 100 queries per policy. They are preliminary and do not establish that one policy is generally better than another.
+The repaired runner completed 100 queries per policy and saved 300 detailed query records. No invalid predictions were reported in the summary. Its output was saved separately, preserving the earlier CSV files.
 
+These are preliminary results from separate runs. They do not establish statistical significance or prove that one policy is generally superior.
 
+## 5. Result Visualizations and Data
 
-\## 5. Result Visualizations
+The `results` directory contains visualizations and CSV files, including:
 
+- `partition_accuracy.png` — partition-level accuracy.
+- `bandit_policy_comparison.png` — policy comparison.
+- `bandit_noise_analysis.png` — analysis across noise levels.
+- `partition_evaluation.csv` — partition-level evaluation.
+- `bandit_query_results.csv` and `bandit_summary.csv` — earlier policy results.
+- `bandit_query_results_repaired.csv` and `bandit_summary_repaired.csv` — repaired runner results.
 
+## 6. Validation
 
-The `results` directory contains:
+The noisy-partition verification previously completed successfully, with observed noise rates close to the intended rates.
 
+The bandit selection module passed basic tests. The repaired runner passed syntax and import checks and subsequently completed an end-to-end run, generating separate result CSV files. The repaired results were checked for 300 rows, 100 queries per policy, missing values, and valid class labels.
 
+## 7. Limitations
 
-\- `partition\_accuracy.png` — partition-level accuracy visualization.
+- Only 100 queries were evaluated per policy in each reported run.
+- Results come from separate runs and may vary with random seeds and demonstration selection.
+- The observed differences have not been established as statistically significant.
+- Further repeated trials are needed before drawing strong conclusions about policy performance.
 
-\- `bandit\_policy\_comparison.png` — comparison of policy performance.
+## 8. Future Work
 
-\- `bandit\_noise\_analysis.png` — analysis of performance across noise levels.
+- Repeat experiments with multiple random seeds.
+- Increase the number of evaluation queries.
+- Report variability and confidence intervals.
+- Compare additional bandit algorithms.
+- Study the relationship between label noise and prediction accuracy.
 
-
-
-CSV files in the same directory store detailed query results and policy summaries.
-
-
-
-\## 6. Validation
-
-
-
-The noisy-partition verification script was executed successfully. The observed noise rates were close to the intended rates, with small deviations expected from random label corruption.
-
-
-
-The bandit selection module passed basic tests. The reconstructed experiment runner passed Python compilation and import checks. A complete end-to-end run of the reconstructed runner has not yet been verified.
-
-
-
-\## 7. Limitations
-
-
-
-\- Only 100 evaluation queries were used per policy.
-
-\- The reported results represent one run per policy.
-
-\- Random seeds and demonstration selection may affect results.
-
-\- The current results do not establish statistical significance.
-
-\- Additional experiments are needed before drawing strong conclusions about policy performance.
-
-
-
-\## 8. Future Work
-
-
-
-\- Repeat experiments using multiple random seeds.
-
-\- Increase the number of evaluation queries.
-
-\- Compare additional bandit algorithms.
-
-\- Study the effect of different noise levels on prediction accuracy.
-
-\- Report variability and statistical significance across repeated runs.
-
-
-
-\## 9. Reproducibility
-
-
+## 9. Reproducibility
 
 Run commands from the project root with the virtual environment activated.
 
-
-
-Verify noisy partitions:
-
-
+Activate the environment on Windows:
 
 ```cmd
-
-python src\\data\\verify\_noisy\_partitions.py
-
+.venv\Scripts\activate
 ```
 
-
-
-Regenerate the bandit plots using existing results:
-
-
+Install dependencies in a fresh environment:
 
 ```cmd
-
-python plot\_bandit\_results.py
-
+python -m pip install -r requirements.txt
 ```
 
+Verify noisy partitions using the verification script available in the repository. Check its filename under `src\data` before running it.
 
+Regenerate plots from the available saved results:
 
-\*\*Important:\*\* The full experiment runner may take considerable time and can overwrite existing result CSV files. Back up the current results before starting a new run.
+```cmd
+python plot_bandit_results.py
+```
 
+The experiment runner is:
+
+```cmd
+python src\bandit\evaluate_bandit.py
+```
+
+**Important:** Model inference may take considerable time. Back up existing results before running experiments. The repaired runner creates separate CSV files named `bandit_query_results_repaired.csv` and `bandit_summary_repaired.csv`.
+
+## 10. Project Artifacts
+
+The repository includes source code, configuration and data-processing scripts, saved experiment results, visualizations, this README, and `CSE399_Final_Report.md`.

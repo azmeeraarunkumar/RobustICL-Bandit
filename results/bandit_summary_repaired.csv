@@ -1,0 +1,4 @@
+policy,queries,correct,invalid_predictions,accuracy_percent,mean_reward
+Fixed-P1,100,62,0,62.0,0.62
+Random,100,64,0,64.0,0.64
+UCB1,100,66,0,66.0,0.66
